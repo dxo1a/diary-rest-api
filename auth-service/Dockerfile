@@ -4,12 +4,12 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=1 GOOS=linux go build -o action-service ./server.go
+RUN CGO_ENABLED=1 GOOS=linux go build -o auth-service ./server.go
 
 FROM alpine:latest
 RUN apk add --no-cache ca-certificates sqlite-libs
 WORKDIR /app
-COPY --from=builder /app/action-service ./
+COPY --from=builder /app/auth-service ./
 
-EXPOSE 8081
-ENTRYPOINT [ "./action-service" ]
+EXPOSE 8080
+ENTRYPOINT [ "./auth-service" ]
