@@ -1,0 +1,40 @@
+services:
+  action-service:
+    build: ./action-service
+    container_name: action-service
+    env_file:
+      - .env
+    ports:
+      - "8081:8081"
+  
+  calendar-service:
+    build: ./calendar-service
+    container_name: calendar-service
+    env_file:
+      - .env
+    ports:
+      - "8082:8082"
+  
+  habit-service:
+    build: ./habit-service
+    container_name: habit-service
+    env_file:
+      - .env
+    ports:
+      - "8083:8083"
+  
+  metrics-service:
+    build: ./metrics-service
+    container_name: metrics-service
+    env_file:
+      - .env
+    ports:
+      - "8084:8084"
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    env_file:
+      - .env
+    ports:
+      - "8085:8085"
