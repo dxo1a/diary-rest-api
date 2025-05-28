@@ -10,13 +10,25 @@ import (
 
 func Auth(secret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		auth := c.GetHeader(("Authorization"))
-		parts := strings.SplitN(auth, " ", 2)
-		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid auth header"})
+		auth := c.GetHeader("Authorization")
+		var tokenStr string
+		if auth != "" {
+			parts := strings.SplitN(auth, " ", 2)
+			if len(parts) == 2 && parts[0] == "Bearer" {
+				tokenStr = parts[1]
+			}
+		}
+		// Если токен не найден в заголовке, пробуем взять из cookie
+		if tokenStr == "" {
+			cookie, err := c.Cookie("access_token")
+			if err == nil {
+				tokenStr = cookie
+			}
+		}
+		if tokenStr == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "no token provided"})
 			return
 		}
-		tokenStr := parts[1]
 		token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
 			return []byte(secret), nil
 		})
